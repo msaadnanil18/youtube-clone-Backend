@@ -1,4 +1,3 @@
-import { Collection } from "mongoose";
 import connectDB from "./db/index.js";
 import dotenv from "dotenv"
 import { app } from "./app.js";
