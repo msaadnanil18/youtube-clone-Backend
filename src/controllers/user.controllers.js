@@ -9,7 +9,7 @@ const registerUser = asyncHandler(async(req, res) => {
   //   message:"baba yaga"
   // })
 
-  const {username, email, password, name } = req.body
+  const {username, email, password, fullName } = req.body
   console.log("email", email)
   if (
     [fullName, email, username, password, ].some((field) => field?.trim() === "" )
@@ -17,7 +17,7 @@ const registerUser = asyncHandler(async(req, res) => {
     throw new ApiError(400, "all fields are required")
   }
 
-  const exitedUser = User.findOne({
+  const exitedUser =await User.findOne({
     $or:[{username}, {email}, ]
   })
   
@@ -29,14 +29,14 @@ const registerUser = asyncHandler(async(req, res) => {
   const coverImageLocalPath =  req.files?.coverImage[0].path
 
   if (!avatarOnLocalPath) {
-    throw new ApiError(400, "Avatar file is required")
+    throw new ApiError(400, "Avatar file is required.use")
     
   }
 const avatar = await uploadCloudnary(avatarOnLocalPath)
  const coverImage  = await uploadCloudnary(coverImageLocalPath)
 
  if (!avatar) {
-  throw new ApiError(400, "Avatar file is required")
+  throw new ApiError(400, "Avatar file is need")
  }
   const user =  await User.create({
       fullName,
@@ -44,7 +44,7 @@ const avatar = await uploadCloudnary(avatarOnLocalPath)
       coverImage: coverImage?.url || "" ,
       email,
       password,
-      username: username.toLowerCase()
+      username
     })
   const createdUseer = await User.findById(user._id).select(
     "-password -refreshToken"
@@ -54,7 +54,7 @@ const avatar = await uploadCloudnary(avatarOnLocalPath)
     throw new ApiError(500, "something went wrong while register the user")
   }
 
-   return status(201).json(
+   return res.status(201).json(
     new ApiResponse(200, createdUseer, "user registered successfully ")
    )
 })

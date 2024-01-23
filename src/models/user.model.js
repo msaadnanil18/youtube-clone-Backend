@@ -30,7 +30,7 @@ const userSchema = new Schema(
             type:String,   // cloundary
             required:true,
         },
-        coverimage:{
+        coverImage:{
             type:String,
         },
         watchHistory:[
