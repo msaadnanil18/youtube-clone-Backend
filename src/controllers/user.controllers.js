@@ -205,7 +205,7 @@ const changeCurrentPassword = asyncHandler(async(req,res) =>{
 const getCurrenUser = asyncHandler(async(req, res) => {
   return res
   .status(200)
-  .json(200, req.user, "current user is fetch successfully")
+  .json(new ApiResponse(200, req.user, "current user is fetch successfully"))
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {
@@ -214,7 +214,7 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
   if (!fullName || !email) {
     throw new ApiError(400, "all fields are required")
   }
- const user = User.findByIdAndUpdate(
+ const user = await User.findByIdAndUpdate(
   req.user?._id,
   {
     $set:{
@@ -282,6 +282,76 @@ return res
 
 })
 
+const userChennelProfile = asyncHandler(async(req,res) => {
+const {username} = req.params
+  
+  if (!username?.trim()) {
+    throw new ApiError(400, "username is missing")
+  }
+  const channael = await User.aggregate([
+  {
+    $match:{
+      username:username
+    }
+  },
+  {
+     $lookup:{
+      from:"subscriptions",
+      localField:"_id",
+      foreignField:"channel",
+      as:"subscribers"
+     }
+  } ,
+  {
+    $lookup:{
+      from:"subscriptions",
+      localField:"_id",
+      foreignField:"subscriber",
+      as:"subscribedTo  "
+     }
+    
+  },
+  {
+    $addFields:{
+      subscribersCount:{
+        $size:"$subscribers"
+      },
+      chennaelsSubscriberedToCount:{
+        $size:"$subscribedTo"
+      },
+      isSubscribed:{
+        $con:{
+          if:{$in:[req.user?._id,"subscribers.subscriber"]},
+          then:true,
+          else:false
+        }
+      }
+
+    }
+  },
+  {
+     $project:{
+      fullName:1,
+      username:1,
+      subscribersCount:1,
+      chennaelsSubscriberedToCount:1,
+      avatar:1,
+      coverImage:1,
+      email:1
+
+     }
+  }
+
+])
+if (!channael?.length) {
+  throw new ApiError(400,"channel does not exits")
+}
+  return res
+  .status(200)
+  .json(
+  new ApiResponse(200, channael[0], "User channel fetched successfully")
+  )
+})
 
 export {
   registerUser,
@@ -292,5 +362,6 @@ export {
   getCurrenUser , 
   updateAccountDetails, 
   updateUserAvatar,
-  updateUserCoverImage
+  updateUserCoverImage,
+  userChennelProfile
 }
