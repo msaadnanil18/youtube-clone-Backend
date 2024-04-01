@@ -148,7 +148,7 @@ const logOutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, 'User logged out'));
 });
 
-const refressAccessToken = asyncHandler(async (req, res) => {
+const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
   if (!incomingRefreshToken) {
@@ -410,7 +410,7 @@ export {
   registerUser,
   loginUser,
   logOutUser,
-  refressAccessToken,
+  refreshAccessToken,
   changeCurrentPassword,
   getCurrenUser,
   updateAccountDetails,
