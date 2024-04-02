@@ -24,7 +24,7 @@ const gerateAccessAndRefreshToken = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password, fullName } = req.body;
-
+      
   if (
     [fullName, email, username, password].some((field) => field?.trim() === '')
   ) {
@@ -80,8 +80,16 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUseer, 'user registered successfully '));
 });
 
+
+const trialError = asyncHandler(async(req, res) => {
+  const { a } = req.body;
+ 
+  console.log(a, "hiss")
+})
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
+
+  console.log(email, username, password, "hejses")
   if (!(username || email)) {
     throw new ApiError(400, 'username or password is required');
   }
@@ -126,11 +134,12 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logOutUser = asyncHandler(async (req, res) => {
+  
   User.findByIdAndUpdate(
     req.body._id,
     {
       $set: {
-        refreshToken: undefined,
+        refreshToken: 1,
       },
     },
     {
@@ -407,6 +416,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 });
 
 export {
+  trialError,
   registerUser,
   loginUser,
   logOutUser,

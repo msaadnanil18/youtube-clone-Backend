@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   logOutUser,
   loginUser,
+  trialError,
   registerUser,
   refreshAccessToken,
   changeCurrentPassword,
@@ -28,16 +29,15 @@ router.route('/register').post(
       maxCount: 1,
     },
   ]),
-  registerUser,
+  registerUser, 
 );
-
+router.route('/trial').post(trialError)
 router.route('/login').post(loginUser);
-
 router.route('/logout').post(verifyJWT, logOutUser);
 router.route('/refresh-token').post(refreshAccessToken);
 router.route('/change-password').post(verifyJWT, changeCurrentPassword);
 router.route('/current-user').get(verifyJWT, getCurrenUser);
-router.route('update-account').patch(verifyJWT, updateAccountDetails);
+router.route('/update-account').patch(verifyJWT, updateAccountDetails);
 router
   .route('/avatar')
   .patch(verifyJWT, upload.single('avatar'), updateUserAvatar);
