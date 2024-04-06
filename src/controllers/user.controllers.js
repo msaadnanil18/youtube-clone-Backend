@@ -86,6 +86,8 @@ const trialError = asyncHandler(async(req, res) => {
  
   console.log(a, "hiss")
 })
+
+
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
@@ -203,8 +205,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
-  req.user?.id;
-  const user = await user.findById(req.user?._id);
+  req.User?.id;
+  const user = await User.findById(req.user?._id);
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
   if (!isPasswordCorrect) {
     throw ApiError(400, 'Inavalid old Password');
