@@ -23,7 +23,7 @@ const videoSchema = new Schema(
      },
      duration:{
         type:Number, // cloudnary url
-        required:true,
+        // required:true,
     },
     views:{
         type:Number,
