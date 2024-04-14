@@ -7,13 +7,66 @@ import { Video } from '../models/video.model.js';
 import { User } from '../models/user.model.js';
 
 const getAllVideos = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    query = '',
+    sortBy = 'createdAt',
+    sortType = 'desc',
+    userId,
+  } = req.query;
+
+  const conditions = {
+    $or: [
+      { title: { $regex: query, $options: 'i' } },
+      { description: { $regex: query, $options: 'i' } },
+    ],
+  };
+
+  if (userId) {
+    conditions.owner = userId;
+  }
+  if (query) {
+    conditions.$text = { $search: query };
+  }
+
+  const sortDirection = sortType.toLowerCase() === 'asc' ? 1 : -1;
+  const sortOptions = {};
+  sortOptions[sortBy] = sortDirection;
+
+  const listVideos = await Video.find(conditions)
+    .populate('owner')
+    .sort(sortOptions)
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .exec();
+
+  const total = await Video.countDocuments(conditions);
+  console.log(total, 'listVideos');
+
+  return res.status(200).json({
+    statusCode: 200,
+    data: listVideos,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  });
 });
 
 const publishAVideo = asyncHandler(async (req, res) => {
-  const { title, description, owner } = req.body;
+  const { title, description } = req.body;
 
-  console.log(title, description);
+  const { userId } = req.params;
+  if (!userId?.trim()) {
+    throw new ApiError(400, 'username is missing');
+  }
+
+  if ([title, description].some((items) => items?.trim() === '')) {
+    throw new ApiError(400, 'title and description is required');
+  }
 
   const thumbnailOnLocalPath = req.files?.thumbnail[0]?.path;
   if (!thumbnailOnLocalPath) {
@@ -32,7 +85,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
   const createdVideo = await Video.create({
     title,
     description,
-    owner,
+    owner: userId,
+    duration: videos?.duration,
     videoFile: videos.url,
     thumbnail: thumbnails.url,
   });
@@ -42,4 +96,4 @@ const publishAVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, 'video upload successfully ', createdVideo));
 });
 
-export { publishAVideo };
+export { publishAVideo, getAllVideos };

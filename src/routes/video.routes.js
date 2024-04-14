@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { upload } from '../middlewares/multer.js';
 import { publishAVideo } from "../controllers/video.controller.js";
+import { getAllVideos } from "../controllers/video.controller.js";
 
  const videoRouter = Router()
 
- videoRouter.route('/').post(
+ videoRouter.route('/uploads/:userId').post(
     upload.fields([
         {
             name:'videoFile',
@@ -17,6 +18,6 @@ import { publishAVideo } from "../controllers/video.controller.js";
     ]),
     publishAVideo
 )
-
+videoRouter.route('/list-videos').get(getAllVideos)
 
  export default videoRouter
