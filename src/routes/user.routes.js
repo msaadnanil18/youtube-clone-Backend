@@ -29,10 +29,10 @@ router.route('/register').post(
       maxCount: 1,
     },
   ]),
-  registerUser, 
+  registerUser,
 );
-router.route('/trial').post(trialError)
-router.route('/login').post(loginUser);
+router.route('/trial').post(trialError);
+router.route('/login').post(upload.fields([]), loginUser);
 router.route('/logout').post(verifyJWT, logOutUser);
 router.route('/refresh-token').post(refreshAccessToken);
 router.route('/change-password').post(verifyJWT, changeCurrentPassword);

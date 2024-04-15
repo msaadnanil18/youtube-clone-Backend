@@ -42,7 +42,6 @@ const getAllVideos = asyncHandler(async (req, res) => {
     .exec();
 
   const total = await Video.countDocuments(conditions);
-  console.log(total, 'listVideos');
 
   return res.status(200).json({
     statusCode: 200,
@@ -59,9 +58,9 @@ const getAllVideos = asyncHandler(async (req, res) => {
 const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
 
-  const { userId } = req.params;
-  if (!userId?.trim()) {
-    throw new ApiError(400, 'username is missing');
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(400, 'userId is missing');
   }
 
   if ([title, description].some((items) => items?.trim() === '')) {
@@ -93,7 +92,26 @@ const publishAVideo = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(200, 'video upload successfully ', createdVideo));
+    .json(new ApiResponse(200, createdVideo, 'video upload successfully '));
 });
 
-export { publishAVideo, getAllVideos };
+const deleteVideo = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  try {
+    const deletedVideo = await Video.findByIdAndDelete(videoId);
+
+    if (!deletedVideo) {
+      return res
+        .status(404)
+        .json(new ApiResponse(404, null, 'Video not found'));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, deletedVideo, 'Video deleted successfully'));
+  } catch (error) {
+    throw new ApiError(500, 'Error while deleting video', error);
+  }
+});
+
+export { publishAVideo, getAllVideos, deleteVideo };

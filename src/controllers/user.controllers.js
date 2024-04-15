@@ -24,7 +24,7 @@ const gerateAccessAndRefreshToken = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password, fullName } = req.body;
-      
+
   if (
     [fullName, email, username, password].some((field) => field?.trim() === '')
   ) {
@@ -80,18 +80,15 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUseer, 'user registered successfully '));
 });
 
-
-const trialError = asyncHandler(async(req, res) => {
+const trialError = asyncHandler(async (req, res) => {
   const { a } = req.body;
- 
-  console.log(a, "hiss")
-})
 
+  console.log(a, 'hiss');
+});
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  console.log(email, username, password, "hejses")
   if (!(username || email)) {
     throw new ApiError(400, 'username or password is required');
   }
@@ -136,7 +133,6 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logOutUser = asyncHandler(async (req, res) => {
-  
   User.findByIdAndUpdate(
     req.body._id,
     {
@@ -249,6 +245,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path;
+
   if (!avatarLocalPath) {
     throw new ApiError(400, 'Avatar file is missing');
   }
