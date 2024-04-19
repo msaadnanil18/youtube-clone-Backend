@@ -22,6 +22,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
       { description: { $regex: query, $options: 'i' } },
     ],
   };
+  console.log(conditions,'conditions')
 
   if (userId) {
     conditions.owner = userId;
