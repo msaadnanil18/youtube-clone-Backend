@@ -22,7 +22,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
       { description: { $regex: query, $options: 'i' } },
     ],
   };
-  console.log(conditions,'conditions')
+  console.log(conditions, 'conditions');
 
   if (userId) {
     conditions.owner = userId;
@@ -115,4 +115,14 @@ const deleteVideo = asyncHandler(async (req, res) => {
   }
 });
 
-export { publishAVideo, getAllVideos, deleteVideo };
+const getVideoToPlay = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const video = await Video.findById(id);
+    return res.status(200).json(new ApiResponse(200, video));
+  } catch (error) {
+    throw new ApiError(error, 'error while fetching videos');
+  }
+});
+
+export { publishAVideo, getAllVideos, deleteVideo, getVideoToPlay };

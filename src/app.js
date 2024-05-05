@@ -14,12 +14,12 @@ app.use(
 
 app.use(
   express.json({
-    limit: '16kb',
+    limit: '150kb',
   }),
 );
 app.use(
   urlencoded({
-    limit: '16kb',
+    limit: '150kb',
     extended: true,
   }),
 );
