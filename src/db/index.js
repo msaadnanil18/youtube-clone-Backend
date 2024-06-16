@@ -13,4 +13,11 @@ const connectDB = async () => {
     }
 }
 
+
+
+export const mongooseMiddleware = (req, res, next) => {
+  req.db = mongoose.models;
+  next();
+};
+
 export default connectDB;

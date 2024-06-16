@@ -7,6 +7,8 @@ import { Video } from '../models/video.model.js';
 import { User } from '../models/user.model.js';
 
 const getAllVideos = asyncHandler(async (req, res) => {
+  const { db } = req;
+  console.log(db.Video.find(), 'dbss');
   const {
     page = 1,
     limit = 10,
@@ -35,7 +37,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
   const sortOptions = {};
   sortOptions[sortBy] = sortDirection;
 
-  const listVideos = await Video.find(conditions)
+  const listVideos = await db.Video.find(conditions)
     .populate('owner')
     .sort(sortOptions)
     .skip((page - 1) * limit)
@@ -117,6 +119,8 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 const getVideoToPlay = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { db } = req;
+  console.log(db, 'dbss');
   try {
     const video = await Video.findById(id);
     return res.status(200).json(new ApiResponse(200, video));

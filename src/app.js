@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import videoRouter from './routes/video.routes.js';
 import CommentRouter from './routes/comments.routes.js';
+import { mongooseMiddleware } from './db/index.js';
 
 const app = express();
 app.use(
@@ -24,6 +25,7 @@ app.use(
   }),
 );
 app.use(express.static('public'));
+app.use(mongooseMiddleware)
 
 app.use(cookieParser());
 
